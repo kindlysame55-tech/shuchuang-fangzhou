@@ -1,0 +1,4 @@
+# Exclude large uncompressed source GLB (web app loads the 814 KB Draco-compressed version)
+models/shuchuang_fangzhou_mascot.glb
+.DS_Store
+Thumbs.db

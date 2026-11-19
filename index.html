@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>数创方舟 · 未来农业的智慧方舟 | 3D 滚动叙事与品牌交互体验</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M8 18L21 10.5L24.5 12.6L11.5 20V27.5L21 33V40.5L8 33V18Z' fill='%237AD832'/%3E%3Cpath d='M26 12.5L40 20.5V25L29.5 19V38.5L26 36.5V12.5Z' fill='%2348B422'/%3E%3C/svg%3E" />
+  <meta name="description" content="数创方舟一体化智能种植解决方案——融合物联网、人工智能、大数据与高分子绿色材料，以 3D 实体化交互呈现品牌标识、四维技术承诺、实训彩绘方案与多元应用场景。" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three.module.min.js",
+        "three/addons/": "./vendor/"
+      }
+    }
+  </script>
+</head>
+<body data-theme="daylight">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+  <!-- Non-blocking Floating Status Pill (never locks Screen 1) -->
+  <div id="loader-overlay" class="loader-overlay" role="status" aria-live="polite">
+    <div class="loader-card">
+      <div class="loader-emblem" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="24" height="24" fill="none">
+          <path d="M12 22L28 13L32 15.5L16 24.5V34L28 41V50L12 41V22Z" fill="#7AD832" />
+          <path d="M34 15.5L52 25V30.5L38 22.8V47L34 44.6V15.5Z" fill="#48B422" />
+          <path d="M38 27L52 34.5V39.5L38 32V27Z" fill="#0E5E22" />
+          <path d="M38 35.5L52 43V48L38 40.5V35.5Z" fill="#0E5E22" />
+          <path d="M19 13C24 7 35 6 42 10C35 14 26 16 19 13Z" fill="#58C428" />
+          <path d="M33 17C37 11 45 9 49 12C45 16 39 18 33 17Z" fill="#7AD832" />
+        </svg>
+      </div>
+      <div class="loader-meta">
+        <div class="loader-title" id="loader-title">正在加载 3D 实体建模…</div>
+        <div class="loader-bar-track">
+          <div id="loader-bar-fill" class="loader-bar-fill"></div>
+        </div>
+      </div>
+      <div id="loader-percent" class="loader-percent">0%</div>
+    </div>
+  </div>
+
+  <!-- Persistent Fixed WebGL Stage -->
+  <div id="webgl-stage" class="webgl-stage" aria-label="数创方舟 3D 交互建模舞台">
+    <img id="stage-poster" class="stage-poster" src="./assets/mascot_poster.png" alt="数创方舟 3D 吉祥物预览" />
+    <canvas id="ark-canvas"></canvas>
+    <div id="stage-hud-pill" class="stage-hud-pill" aria-hidden="true">
+      <span class="hud-dot"></span>
+      <span id="hud-hint-text">拖拽旋转视角 · 轻触实体悬浮 · 滚动驱动叙事</span>
+    </div>
+  </div>
+
+  <!-- Top Navigation -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#hero" class="brand-link" aria-label="数创方舟首页">
+        <svg class="brand-mark" viewBox="0 0 48 48" width="32" height="32" fill="none" aria-hidden="true">
+          <path d="M8 18L21 10.5L24.5 12.6L11.5 20V27.5L21 33V40.5L8 33V18Z" fill="#7AD832" />
+          <path d="M26 12.5L40 20.5V25L29.5 19V38.5L26 36.5V12.5Z" fill="#48B422" />
+          <path d="M29.5 22.5L40 28.5V32.5L29.5 26.5V22.5Z" fill="#0E5E22" />
+          <path d="M29.5 29.5L40 35.5V39.5L29.5 33.5V29.5Z" fill="#0E5E22" />
+          <path d="M14 10.5C18.5 5.5 27 4.8 32.5 8C27 11.2 19.5 12.5 14 10.5Z" fill="#58C428" />
+          <path d="M25.5 13.5C28.5 9 34.5 7.5 38 9.8C34.8 13 30 14.5 25.5 13.5Z" fill="#7AD832" />
+        </svg>
+        <span class="brand-text">
+          <strong>数创方舟</strong>
+          <small>SHU CHUANG FANG ZHOU</small>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="页面章节导航">
+        <a href="#hero" data-nav="hero">序章</a>
+        <a href="#emblem" data-nav="emblem">胸徽解构</a>
+        <a href="#tech" data-nav="tech">四维技术</a>
+        <a href="#pavilion" data-nav="pavilion">彩绘与价值</a>
+        <a href="#scenarios" data-nav="scenarios">多元场景</a>
+        <a href="#closing" data-nav="closing">方舟邀约</a>
+      </nav>
+
+      <div class="header-actions">
+        <button id="toggle-free-inspect" class="btn-ghost" type="button" aria-pressed="false">
+          <span class="btn-dot"></span>
+          <span>自由巡检</span>
+        </button>
+        <a href="#closing" class="btn-primary">预约示范方案</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Right Chapter Rail -->
+  <aside class="chapter-rail" aria-label="叙事章节进度">
+    <a href="#hero" class="rail-item is-active" data-rail="hero"><span class="rail-num">00</span><span class="rail-label">智慧方舟</span></a>
+    <a href="#emblem" class="rail-item" data-rail="emblem"><span class="rail-num">01</span><span class="rail-label">标识解构</span></a>
+    <a href="#tech" class="rail-item" data-rail="tech"><span class="rail-num">02</span><span class="rail-label">技术承诺</span></a>
+    <a href="#pavilion" class="rail-item" data-rail="pavilion"><span class="rail-num">03</span><span class="rail-label">彩绘展陈</span></a>
+    <a href="#scenarios" class="rail-item" data-rail="scenarios"><span class="rail-num">04</span><span class="rail-label">四大航道</span></a>
+    <a href="#closing" class="rail-item" data-rail="closing"><span class="rail-num">05</span><span class="rail-label">方舟邀约</span></a>
+  </aside>
+
+  <main id="main-content" class="narrative-track">
+    <!-- CHAPTER 0: HERO -->
+    <section id="hero" class="chapter chapter-hero" data-chapter="hero">
+      <div class="chapter-grid">
+        <div class="copy-column">
+          <div class="eyebrow-pill">一体化智能种植解决方案</div>
+          <h1 class="hero-title">
+            数创方舟<br />
+            <span class="title-sub">未来农业的智慧方舟</span>
+          </h1>
+          <p class="hero-lead">
+            融合物联网、人工智能、大数据与高分子绿色材料，破解传统种植依赖人工经验、智能设备高成本高门槛与绿色材料应用不足的行业痛点。
+          </p>
+          <div class="cta-row">
+            <a href="#emblem" class="btn-primary btn-lg">开始滚动叙事</a>
+            <button id="hero-burst-btn" class="btn-secondary btn-lg" type="button">轻触悬浮交互</button>
+          </div>
+          <div class="hero-facts" aria-label="核心技术底座">
+            <div class="fact-chip"><strong>IoT + AI</strong><span>精准环境闭环</span></div>
+            <div class="fact-chip"><strong>高分子材料</strong><span>保温隔热低功耗</span></div>
+            <div class="fact-chip"><strong>全流程溯源</strong><span>扫码可查生长档案</span></div>
+          </div>
+        </div>
+        <div class="stage-spacer" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- CHAPTER 1: 3D LOGO & EMBLEM DECONSTRUCTION -->
+    <section id="emblem" class="chapter chapter-emblem" data-chapter="emblem">
+      <div class="chapter-grid">
+        <div class="copy-column">
+          <div class="section-tag">01 · 3D 胸徽立体解构</div>
+          <h2 class="section-title">一枚会呼吸的<br />立方生态方舟</h2>
+          <p class="section-lead">
+            随着页面滚动，镜头推近吉祥物胸前浮雕标识。13 组立体棱柱在 WebGL 空间中逐层漂浮展开，诠释“数字智造”与“绿色生命”的共生构型。
+          </p>
+
+          <div class="float-card control-card" data-float-card>
+            <div class="control-row">
+              <label for="explode-slider"><strong>胸徽立体悬浮分离度</strong></label>
+              <span id="explode-value" class="mono-val">自动叙事驱动</span>
+            </div>
+            <input id="explode-slider" class="range-input" type="range" min="0" max="100" value="65" aria-label="调整胸徽 3D 悬浮分离深度" />
+            <div class="part-pills" role="group" aria-label="标识部件高亮">
+              <button class="part-pill is-active" type="button" data-part="all">全部浮雕</button>
+              <button class="part-pill" type="button" data-part="leaf">双生嫩叶 · 生命萌芽</button>
+              <button class="part-pill" type="button" data-part="s">S 棱柱 · 数创智控</button>
+              <button class="part-pill" type="button" data-part="f">F 棱柱 · 立体方舟</button>
+              <button class="part-pill" type="button" data-part="text">中英标识铭文</button>
+            </div>
+          </div>
+
+          <div class="emblem-notes-grid">
+            <article class="float-card mini-card" data-float-card>
+              <h3>双叶萌芽冠顶</h3>
+              <p>左长右短的流线叶片凌空舒展，象征农业科研与绿色生态的持续新生。</p>
+            </article>
+            <article class="float-card mini-card" data-float-card>
+              <h3>S × F 等轴方舟体</h3>
+              <p>亮绿与深森绿双色交叠构成“SF”立体方舱，隐喻模块化种植舱与多维数据流。</p>
+            </article>
+          </div>
+        </div>
+        <div class="stage-spacer" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- CHAPTER 2: 4 TECH COMMITMENTS + BACKPACK TELEMETRY -->
+    <section id="tech" class="chapter chapter-tech" data-chapter="tech">
+      <div class="chapter-grid">
+        <div class="copy-column">
+          <div class="section-tag">02 · 四维技术承诺</div>
+          <h2 class="section-title">AI 智慧种植<br />背后是精确闭环</h2>
+          <p class="section-lead">
+            模型旋转展示背部 AIoT 控制核心。源自实训基地彩绘方案的实时环境参数，驱动温湿度、光照、二氧化碳与水肥全自动协同。
+          </p>
+
+          <!-- Live Telemetry HUD echoing PDF Page 2 -->
+          <div class="float-card telemetry-panel" data-float-card>
+            <div class="telemetry-header">
+              <span>AI 智慧种植 · 实时舱内遥测</span>
+              <div class="crop-presets" role="group" aria-label="切换农作物预设">
+                <button class="preset-btn is-active" type="button" data-preset="leafy">水培叶菜</button>
+                <button class="preset-btn" type="button" data-preset="berry">数字草莓</button>
+                <button class="preset-btn" type="button" data-preset="ganoderma">科研灵芝</button>
+              </div>
+            </div>
+            <div class="telemetry-metrics">
+              <div class="metric-box">
+                <span class="metric-label">环境湿度</span>
+                <strong id="val-humidity" class="metric-val">65%</strong>
+                <div class="metric-bar"><i id="bar-humidity" style="width: 65%"></i></div>
+              </div>
+              <div class="metric-box">
+                <span class="metric-label">光谱光照</span>
+                <strong id="val-light" class="metric-val">80%</strong>
+                <div class="metric-bar"><i id="bar-light" style="width: 80%"></i></div>
+              </div>
+              <div class="metric-box">
+                <span class="metric-label">营养液供给</span>
+                <strong id="val-nutrient" class="metric-val">90%</strong>
+                <div class="metric-bar"><i id="bar-nutrient" style="width: 90%"></i></div>
+              </div>
+              <div class="metric-box">
+                <span class="metric-label">CO₂ 浓度</span>
+                <strong id="val-co2" class="metric-val">820 ppm</strong>
+                <div class="metric-bar"><i id="bar-co2" style="width: 72%"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pillar-grid" role="tablist" aria-label="四大技术承诺">
+            <button class="float-card pillar-card is-active" type="button" data-tech="plant" data-float-card>
+              <span class="pillar-code">01</span>
+              <h3>慧种植</h3>
+              <p>内置多品类农作物生长数据库，新手也能一键启动标准化种植方案。</p>
+            </button>
+            <button class="float-card pillar-card" type="button" data-tech="control" data-float-card>
+              <span class="pillar-code">02</span>
+              <h3>慧调控</h3>
+              <p>物联网传感阵列与 AI 算法实时联动，精准自动调控光温水气肥。</p>
+            </button>
+            <button class="float-card pillar-card" type="button" data-tech="energy" data-float-card>
+              <span class="pillar-code">03</span>
+              <h3>可节能</h3>
+              <p>高分子绿色保温隔热材料结合低功耗传感拓扑，显著降低日常运行能耗。</p>
+            </button>
+            <button class="float-card pillar-card" type="button" data-tech="trace" data-float-card>
+              <span class="pillar-code">04</span>
+              <h3>可追溯</h3>
+              <p>全周期环境与农事数据自动归档，手机扫码即可溯源每株作物的成长轨迹。</p>
+            </button>
+          </div>
+        </div>
+        <div class="stage-spacer" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- CHAPTER 3: PAVILION 4-SIDED PAINTING & 4 VALUE EXTENSIONS -->
+    <section id="pavilion" class="chapter chapter-pavilion" data-chapter="pavilion">
+      <div class="chapter-grid">
+        <div class="copy-column">
+          <div class="section-tag">03 · 实训彩绘与多维价值</div>
+          <h2 class="section-title">四面智慧方舟<br />把种植变成生活体验</h2>
+          <p class="section-lead">
+            结合《农林实训基地智慧种植彩绘方案》四面空间视觉，左右滑动或点选下方立体方舟展面，感受从技术验证到大众科普的场景延伸。
+          </p>
+
+          <!-- Interactive 3D Pavilion Prism Card (Swipe / Tap enabled) -->
+          <div id="pavilion-prism-wrap" class="float-card pavilion-viewer" data-float-card>
+            <div class="pavilion-tabs" role="tablist" aria-label="智慧种植坊四面彩绘方案">
+              <button class="pav-tab is-active" type="button" data-face="0">正面彩绘</button>
+              <button class="pav-tab" type="button" data-face="1">东侧面</button>
+              <button class="pav-tab" type="button" data-face="2">背面 HUD</button>
+              <button class="pav-tab" type="button" data-face="3">西侧面</button>
+            </div>
+
+            <div id="pavilion-stage" class="pavilion-stage" tabindex="0" aria-label="左右滑动切换智慧种植坊彩绘展面">
+              <div class="pavilion-face-card" id="pavilion-face-card">
+                <div class="pav-visual" id="pav-visual">
+                  <div class="pav-badge" id="pav-badge">智慧种植坊正面彩绘方案</div>
+                  <h3 class="pav-headline" id="pav-headline">数创方舟 · 智能机械臂与生态温室</h3>
+                  <p class="pav-desc" id="pav-desc">
+                    主立面呈现透明智能温室中的立体水培菜畦、精密采摘机械臂与人形农艺助手，直观建立“未来农业展示窗口”的第一印象。
+                  </p>
+                  <div class="pav-tags" id="pav-tags">
+                    <span>智能采摘机械臂</span>
+                    <span>立体水培舱</span>
+                    <span>生态采摘体验</span>
+                  </div>
+                </div>
+                <div class="pav-swipe-hint">← 左右滑动或点击切换建筑四面彩绘 →</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Value Extensions -->
+          <div class="value-grid">
+            <article class="float-card value-card" data-float-card>
+              <div class="value-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><path d="M17 13v8M13 17h8"/></svg>
+              </div>
+              <div>
+                <h3>玩创意</h3>
+                <p>支持模块化 DIY 自由拼装组合，适配校园创客空间与家庭阳台场景。</p>
+              </div>
+            </article>
+            <article class="float-card value-card" data-float-card>
+              <div class="value-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </div>
+              <div>
+                <h3>趣科普</h3>
+                <p>配套图文科普手册与系列短视频，让传感原理与植物生理变得直观好懂。</p>
+              </div>
+            </article>
+            <article class="float-card value-card" data-float-card>
+              <div class="value-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c4-4 7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 3 8 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              </div>
+              <div>
+                <h3>享健康</h3>
+                <p>在密闭可控环境中培育零农残新鲜果蔬，从舱内直达每日健康餐桌。</p>
+              </div>
+            </article>
+            <article class="float-card value-card" data-float-card>
+              <div class="value-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </div>
+              <div>
+                <h3>乐生活</h3>
+                <p>把植物生长的治愈感融入日常空间，践行绿色、从容的智慧慢生活。</p>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div class="stage-spacer" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- CHAPTER 4: 4 SCENARIOS & BUSINESS MODEL -->
+    <section id="scenarios" class="chapter chapter-scenarios" data-chapter="scenarios">
+      <div class="chapter-grid">
+        <div class="copy-column">
+          <div class="section-tag">04 · 多元应用航道</div>
+          <h2 class="section-title">从田间实训到远洋甲板<br />一艘方舟多维落地</h2>
+          <p class="section-lead">
+            点选不同应用航道，3D 方舟吉祥物将实时切换环境光影与生态卫星环，呈现“智能化 + 数据增值 + 创新材料赋能”的立体商业模式。
+          </p>
+
+          <div class="scenario-list">
+            <button class="float-card scenario-card is-active" type="button" data-scenario="rural" data-float-card>
+              <div class="scenario-head">
+                <span class="scenario-badge">场景 01</span>
+                <h3>美丽乡村示范点</h3>
+              </div>
+              <p>作为智慧农业展示窗口与沉浸式科普教育基地，联合政府与社区打造农旅融合示范名片。</p>
+            </button>
+
+            <button class="float-card scenario-card" type="button" data-scenario="park" data-float-card>
+              <div class="scenario-head">
+                <span class="scenario-badge">场景 02</span>
+                <h3>高科技农业园区</h3>
+              </div>
+              <p>充当标准化种植验证平台与高精度数据采集终端，沉淀作物模型并赋能规模化生产复制。</p>
+            </button>
+
+            <button class="float-card scenario-card" type="button" data-scenario="university" data-float-card>
+              <div class="scenario-head">
+                <span class="scenario-badge">场景 03</span>
+                <h3>高校科研机构</h3>
+              </div>
+              <p>支持多作物与<strong>灵芝</strong>等珍稀菌药对照实验，为智能控制算法与高分子材料研发提供稳定载体。</p>
+            </button>
+
+            <button class="float-card scenario-card" type="button" data-scenario="ocean" data-float-card>
+              <div class="scenario-head">
+                <span class="scenario-badge">场景 04</span>
+                <h3>国际远洋运输公司</h3>
+              </div>
+              <p>为远航船员提供新鲜蔬菜的自给自足舱室方案，切实缓解长期海上作业的饮食单调与补给难题。</p>
+            </button>
+          </div>
+
+          <div class="float-card biz-banner" data-float-card>
+            <div class="biz-title">立体商业生态 · 三引擎协同</div>
+            <div class="biz-pillars">
+              <span><strong>智能化硬件</strong> · 标准化种植舱交付</span>
+              <span><strong>数据增值</strong> · 生长模型与溯源服务</span>
+              <span><strong>材料赋能</strong> · 绿色高分子保温节能</span>
+            </div>
+          </div>
+        </div>
+        <div class="stage-spacer" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- CHAPTER 5: CLOSING & INTERACTIVE PLAYGROUND -->
+    <section id="closing" class="chapter chapter-closing" data-chapter="closing">
+      <div class="chapter-grid">
+        <div class="copy-column">
+          <div class="section-tag">05 · 终章邀约与自由巡检</div>
+          <h2 class="section-title">我在数创方舟等你</h2>
+          <p class="section-lead">
+            现在，整个 3D 舞台已完全解锁：用手指滑动或鼠标拖拽即可 360° 巡检吉祥物建模细节；轻触模型表面即可触发实体化漂浮弹跳与胸徽立体拆解。
+          </p>
+
+          <div class="float-card playground-card" data-float-card>
+            <h3>3D 实体交互控制台</h3>
+            <div class="playground-actions">
+              <button id="pg-bounce" class="btn-primary" type="button">触发悬浮跃动</button>
+              <button id="pg-explode" class="btn-secondary" type="button">拆解 / 还原胸徽</button>
+              <button id="pg-spin" class="btn-secondary" type="button">360° 展示背面控制仓</button>
+              <button id="pg-reset" class="btn-ghost" type="button">重置正面视角</button>
+            </div>
+            <div class="trace-preview">
+              <div class="qr-box" aria-hidden="true">
+                <svg viewBox="0 0 40 40" width="44" height="44" fill="none">
+                  <rect x="2" y="2" width="14" height="14" rx="2" stroke="#0E5E22" stroke-width="2.5"/>
+                  <rect x="6" y="6" width="6" height="6" fill="#48B422"/>
+                  <rect x="24" y="2" width="14" height="14" rx="2" stroke="#0E5E22" stroke-width="2.5"/>
+                  <rect x="28" y="6" width="6" height="6" fill="#48B422"/>
+                  <rect x="2" y="24" width="14" height="14" rx="2" stroke="#0E5E22" stroke-width="2.5"/>
+                  <rect x="6" y="28" width="6" height="6" fill="#48B422"/>
+                  <path d="M24 24h6v6h-6zM32 24h6v4h-6zM24 32h4v6h-4zM32 32h6v6h-6z" fill="#0E5E22"/>
+                </svg>
+              </div>
+              <div>
+                <strong>全流程生长数据可追溯</strong>
+                <p>从种子定植、光温水肥 AI 调控日志到采收批次，扫码即见真实透明的智慧农业档案。</p>
+              </div>
+            </div>
+          </div>
+
+          <footer class="site-footer">
+            <div>数创方舟 · SHU CHUANG FANG ZHOU — 未来农业的智慧方舟</div>
+            <div>WebGL + GSAP ScrollTrigger 3D 实体化交互叙事页</div>
+          </footer>
+        </div>
+        <div class="stage-spacer" aria-hidden="true"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    if (window.location.protocol === 'file:') {
+      var lt = document.getElementById('loader-title');
+      var lp = document.getElementById('loader-percent');
+      var lb = document.getElementById('loader-bar-fill');
+      if (lt) lt.textContent = '请双击 preview.bat 启动本地服务以解锁 3D 建模';
+      if (lp) lp.textContent = '静态预览';
+      if (lb) lb.style.width = '100%';
+    }
+  </script>
+  <script src="./vendor/gsap.min.js"></script>
+  <script src="./vendor/ScrollTrigger.min.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
