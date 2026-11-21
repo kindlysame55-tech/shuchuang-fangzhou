@@ -155,7 +155,14 @@ function loadScene() {
   if (scene) return Promise.resolve(scene);
   if (pendingScene) return pendingScene;
   setSceneState('loading', '正在加载 3D 模型');
-  pendingScene = import('./app.js').then(({ createScene }) => createScene(canvas, compact.matches, reducedMotion.matches))
+  const useCompactModel = compact.matches;
+  const modelPath = useCompactModel ? './models/shuchuang_fangzhou_mascot_mobile.glb' : './models/shuchuang_fangzhou_mascot_opt.glb';
+  const modelBytes = fetch(new URL(modelPath, import.meta.url)).then((response) => {
+    if (!response.ok) throw new Error('3D model request failed (' + response.status + ')');
+    return response.arrayBuffer();
+  });
+  pendingScene = Promise.all([import('./app.js?v=2'), modelBytes])
+    .then(([{ createScene }, bytes]) => createScene(canvas, bytes, useCompactModel, reducedMotion.matches))
     .then((model) => {
       scene = model;
       updateView();

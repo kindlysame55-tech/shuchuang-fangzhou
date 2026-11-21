@@ -3,7 +3,7 @@ import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { DRACOLoader } from './vendor/DRACOLoader.js';
 import { RoomEnvironment } from './vendor/RoomEnvironment.js';
 
-export async function createScene(canvas, compact, reducedMotion) {
+export async function createScene(canvas, modelBytes, compact, reducedMotion) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: !compact,
@@ -18,10 +18,9 @@ export async function createScene(canvas, compact, reducedMotion) {
   decoder.setDecoderPath(new URL('./vendor/draco/', import.meta.url).href);
   decoder.setWorkerLimit(compact ? 1 : 2);
   const loader = new GLTFLoader().setDRACOLoader(decoder);
-  const modelName = compact ? 'shuchuang_fangzhou_mascot_mobile.glb' : 'shuchuang_fangzhou_mascot_opt.glb';
   let model;
   try {
-    const gltf = await loader.loadAsync(new URL('./models/' + modelName, import.meta.url).href);
+    const gltf = await loader.parseAsync(modelBytes, '');
     model = gltf.scene;
   } catch (error) {
     renderer.dispose();
